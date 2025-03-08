@@ -1,4 +1,4 @@
-# SC archiver
+# SoundCloud archiver
 
 Download all of your soundcloud uploads quickly. Requires **Python 3.12**.
 
