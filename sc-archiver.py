@@ -98,6 +98,7 @@ async def download_track(
         async with COUNTER_LOCK:
             FAILURE += 1
         logger.error(f"Failed to obtain metadata from headers {track.title}: {e}")
+        return
 
     path = download_folder / meta.filename
     logger.debug(f"Downloading as {path} modified {meta.last_modified}")
