@@ -92,6 +92,7 @@ async def download_track(
                 FAILURE += 1
             logger.error(f"Failed to download {track.title}: {e}")
             return
+
     try:
         meta = ContentMetadata.from_content_headeres(response.headers)
     except Exception as e:
@@ -102,10 +103,16 @@ async def download_track(
 
     path = download_folder / meta.filename
     logger.debug(f"Downloading as {path} modified {meta.last_modified}")
-
-    with path.open("wb") as f:
-        f.write(response.content)
-    os.utime(path, (meta.last_modified.timestamp(), meta.last_modified.timestamp()))
+    
+    try:
+        with path.open("wb") as f:
+            f.write(response.content)
+        os.utime(path, (meta.last_modified.timestamp(), meta.last_modified.timestamp()))
+    except Exception as e:
+        async with COUNTER_LOCK:
+            FAILURE += 1
+        logger.error(f"Failed to save {track.title}: {e} as {path.absolute()}")
+        return
 
     logger.info(f"Downloaded {track.title} successfully to {path.absolute()}")
     async with COUNTER_LOCK:
