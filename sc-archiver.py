@@ -5,6 +5,7 @@ import os
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+import xattr
 
 from dateutil import parser as date_parser
 from httpx import AsyncClient
@@ -101,23 +102,25 @@ async def download_track(
         logger.error(f"Failed to obtain metadata from headers {track.title}: {e}")
         return
     
-    filename = Path(meta.filename)
-    extended_filename = f"{filename.stem}({track.title}){filename.suffix}"
-    extended_filename = extended_filename.replace("/", "_") 
-    path = download_folder / extended_filename
+    meta_filename = Path(meta.filename)
+    filename = f"{track.title}{meta_filename.suffix}"
+    filename = filename.replace("/", "_")
+    path = download_folder / filename
     logger.debug(f"Downloading as {path} modified {meta.last_modified}")
     
     try:
         with path.open("wb") as f:
             f.write(response.content)
         os.utime(path, (meta.last_modified.timestamp(), meta.last_modified.timestamp()))
+        xattr.setxattr(path, "original.filename", meta.filename.encode())
     except Exception as e:
         async with COUNTER_LOCK:
             FAILURE += 1
         logger.error(f"Failed to save {track.title}: {e} as {path.absolute()}")
         return
-
+    
     logger.info(f"Downloaded {track.title} successfully to {path.absolute()}")
+    
     async with COUNTER_LOCK:
         global SUCCESS
         SUCCESS += 1
