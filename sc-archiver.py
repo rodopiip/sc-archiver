@@ -100,8 +100,11 @@ async def download_track(
             FAILURE += 1
         logger.error(f"Failed to obtain metadata from headers {track.title}: {e}")
         return
-
-    path = download_folder / meta.filename
+    
+    filename = Path(meta.filename)
+    extended_filename = f"{filename.stem}({track.title}){filename.suffix}"
+    extended_filename = extended_filename.replace("/", "_") 
+    path = download_folder / extended_filename
     logger.debug(f"Downloading as {path} modified {meta.last_modified}")
     
     try:
