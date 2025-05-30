@@ -2,6 +2,10 @@
 
 Download all of your soundcloud uploads quickly. Requires **Python 3.12**.
 
+# Tech Stack
+
+- Python 3.12
+
 # Obtaining your client id and token
 
 ## Client id
