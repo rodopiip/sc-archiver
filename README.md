@@ -49,3 +49,9 @@ options:
   --num-parallel-downloads NUM_PARALLEL_DOWNLOADS
                         Number of parallel downloads (default: 5)
 ```
+
+# Contributors
+
+- [@rodopiip](https://github.com/rodopiip) -> Idea, Co-development, Testing
+
+- [@vasilvas99](https://github.com/vasilvas99) -> Co-development
